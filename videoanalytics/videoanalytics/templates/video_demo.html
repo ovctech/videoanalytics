@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Feed</title>
+</head>
+<body>
+    <h1>Video Demonstration</h1>
+    <div>
+        <video id="videoFeed" autoplay playsinline controls></video>
+    </div>
+
+    <script>
+        const video = document.getElementById('videoFeed');
+
+        function loadVideo(cameraUrl) {
+            fetch(`/video_feed?camera_url=${cameraUrl}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    let mediaSource = new MediaSource();
+                    video.src = URL.createObjectURL(mediaSource);
+                    mediaSource.addEventListener('sourceopen', function() {
+                        let sourceBuffer = mediaSource.addSourceBuffer('video/mp4; codecs="avc1.42E01E, mp4a.40.2"');
+                        let buffer = new Uint8Array(0);
+                        sourceBuffer.addEventListener('updateend', function() {
+                            if (buffer.length > 0) {
+                                sourceBuffer.appendBuffer(buffer);
+                            } else {
+                                mediaSource.endOfStream();
+                            }
+                        });
+                        response.body
+                            .pipeThrough(new TextDecoderStream())
+                            .pipeTo(new WritableStream({
+                                write(chunk) {
+                                    buffer = new Uint8Array(chunk);
+                                    sourceBuffer.timestampOffset = 0;
+                                    sourceBuffer.appendBuffer(buffer);
+                                },
+                                close() {
+                                    console.log('Stream closed');
+                                },
+                                abort(e) {
+                                    console.error('Stream error:', e);
+                                }
+                            }));
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching video stream:', error);
+                });
+        }
+
+        window.onload = () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const cameraUrl = urlParams.get('camera_url');
+            if (cameraUrl) {
+                loadVideo(cameraUrl);
+            } else {
+                console.error('Camera URL not provided');
+            }
+        }
+    </script>
+</body>
+</html>
