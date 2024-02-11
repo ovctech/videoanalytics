@@ -76,7 +76,6 @@ bash scripts/run.sh
 ## Ручной метод
 **Выполнить следующую команду:**
 ```bash
-sudo apt install -y make figlet
 sudo docker build -t djangoo
 sudo docker run -d -p 8000:8000 --name djangoo_container djangoo
 // ИЛИ при наличии вебкамеры
