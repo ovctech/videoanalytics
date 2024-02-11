@@ -77,13 +77,10 @@ bash scripts/run.sh
 **Выполнить следующую команду:**
 ```bash
 sudo apt install -y make figlet
-sudo docker build -t djangoo
-sudo docker run -d -p 8000:8000 --name djangoo_container djangoo
-// ИЛИ при наличии вебкамеры
-sudo docker run -d -p 8000:8000 --device=/dev/video0 --name djangoo_container djangoo
-
+bash scripts/docker-compose-setup.sh
+sudo make
 open http://127.0.1.1:8000/video_feed/?camera_url=do_not_have_webcam__if_have_dont_parametize__just_video_feed_slash
-// ИЛИ при наличии вебкамеры
+## ИЛИ при наличии вебкамеры
 open http://127.0.1.1:8000/video_feed/
 ```
 # Ожидаемый результат

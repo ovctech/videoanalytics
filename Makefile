@@ -14,6 +14,9 @@ TARGET := videoanalytics
 
 PROJECT_ROOT := $(abspath .)
 
+# Docker
+DOCKER_COMPOSE_BACKEND := docker-compose.yml
+
 # Scripts settings:
 SCRIPTS_DIR := scripts
 
@@ -64,8 +67,7 @@ endef
 .PHONY: all launch frebuild stop silent-stop back-logs back-deep-logs back-sh deploy-backend
 
 # General:
-all: run-app # Launch videoanalytics (EXAMPLE USAGE>> make )
-# all: check stop run-app # Launch videoanalytics (EXAMPLE USAGE>> make )
+all: check silent-stop run-app # Launch videoanalytics (EXAMPLE USAGE>> make )
 
 launch: silent-stop run-app # Launch videoanalytics without user choice to stop containers (EXAMPLE USAGE>> make launch)
 
@@ -89,40 +91,21 @@ back-sh: get-inside-backend # To get into backend (EXAMPLE USAGE>> make back-sh)
 # ------------------------------
 .PHONY: run-app
 
-# run-app: figlet-launch compose-up-script
-
-run-app: figlet-launch up-django-dockerfile
+run-app: figlet-launch compose-up-script
 
 
 # Sub commands:
 # ------------------------------
-.PHONY: figlet-launch up-django-dockerfile compose-up-script see-backend-logs stop-containers fclean stop-containers-without-read get-inside-backend ffclean check
+.PHONY: figlet-launch compose-up-script see-backend-logs stop-containers fclean stop-containers-without-read get-inside-backend ffclean check
 
 figlet-launch:
 	@echo "\n\n\n"
 	@figlet -c -t -f "ANSI Shadow" Launch app...
 	@echo "\n\n\n"
 
-up-django-dockerfile:
-	@echo "$(COLOR_YELLOW)$(TAB)Stopping and deleting previous djangoo container...$(COLOR_CLEAR)"
-	@sudo docker stop djangoo_container || true
-	@sudo docker rm djangoo_container || true
-	@echo "$(COLOR_YELLOW)$(TAB)Creating backend image...$(COLOR_CLEAR)"
-	@sudo docker build -t djangoo $(TARGET)/.
-	@if [ -e /dev/video0 ]; then \
-	  echo "$(COLOR_YELLOW)$(TAB)Running backend container with webcam...$(COLOR_CLEAR)"; \
-	  sudo docker run -d -p 8000:8000 --device=/dev/video0 --name djangoo_container djangoo; \
-	else \
-	  echo "$(COLOR_YELLOW)$(TAB)Running backend container without webcam...$(COLOR_CLEAR)"; \
-	  sudo docker run -d -p 8000:8000 --name djangoo_container djangoo; \
-	fi
-	@echo "$(COLOR_GREEN)$(TAB)Backend container started up successfully!$(COLOR_CLEAR)"
-
-
-
 get-inside-backend:
 	@echo "$(COLOR_YELLOW)$(TAB)Backend container sh...$(COLOR_CLEAR)"
-	@export CONTAINER_ID=$$(sudo docker ps -q --filter "name=djangoo_container"); \
+	@export CONTAINER_ID=$$(sudo docker ps -q --filter "name=django_videoanalytics"); \
 	sudo docker exec -it $$CONTAINER_ID sh
 	@echo "$(COLOR_GREEN)$(TAB)Backend container sh successfully!$(COLOR_CLEAR)"
 
@@ -133,13 +116,13 @@ compose-up-script:
 
 see-backend-logs:
 	@echo "$(COLOR_YELLOW)$(TAB)Backend logs...$(COLOR_CLEAR)"
-	@export CONTAINER_ID=$$(sudo docker ps -q --filter "name=djangoo_container"); \
+	@export CONTAINER_ID=$$(sudo docker ps -q --filter "name=django_videoanalytics"); \
 	sudo docker exec -it $$CONTAINER_ID tail -f /var/log/fastapi.log
 	@echo "$(COLOR_GREEN)$(TAB)Backend logs finished successfully!$(COLOR_CLEAR)"
 
 see-backend-deep-logs:
 	@echo "$(COLOR_YELLOW)$(TAB)Backend deep logs...$(COLOR_CLEAR)"
-	@export CONTAINER_ID=$$(sudo docker ps -q --filter "name=djangoo_container"); \
+	@export CONTAINER_ID=$$(sudo docker ps -q --filter "name=django_videoanalytics"); \
 	sudo docker exec -it $$CONTAINER_ID cat /var/log/fastapi.log
 	@echo "$(COLOR_GREEN)$(TAB)Backend deep logs finished successfully!$(COLOR_CLEAR)"
 

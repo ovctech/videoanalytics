@@ -1,5 +1,7 @@
 import logging
 import cv2
+import psycopg2
+import os
 
 from collections.abc import Iterator
 from django.http import StreamingHttpResponse
@@ -16,10 +18,35 @@ def video_demo(request):
     return render(request, "video_demo.html")
 
 
+def get_camera_url():
+    host = os.environ.get("POSTGRES_HOST")
+    port = os.environ.get("POSTGRES_PORT")
+    database = os.environ.get("POSTGRES_DB")
+    user = os.environ.get("POSTGRES_USER")
+    password = os.environ.get("POSTGRES_PASSWORD")
+
+    conn = psycopg2.connect(
+        host=host,
+        port=port,
+        database=database,
+        user=user,
+        password=password,
+    )
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT camera_url FROM my_table WHERE id = 1")
+    result = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    return result[0] if result else "/app/videoanalytics/test.mp4"
+
+
 def gen_frames(camera_url: str | int) -> Iterator[bytes]:
     logger.info(f"Attempting to open camera URL:{camera_url}")
     if camera_url != 0:
-        camera_url = "/app/videoanalytics/test.mp4"
+        camera_url = get_camera_url()
     cap = cv2.VideoCapture(camera_url)
     if not cap.isOpened():
         logger.info("Failed to open camera.")

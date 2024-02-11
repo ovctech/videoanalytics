@@ -59,6 +59,9 @@ fi
 
 ###############################################################################
 
+# Prepate docker compose file depending on system webcam
+bash $RELATIVE_PATH/scripts/docker-compose-setup.sh
+
 # Run application if dependicies are already installed
 sudo make
 sleep 3

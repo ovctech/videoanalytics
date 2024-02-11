@@ -11,6 +11,7 @@ django = "^4.2.10"
 djangorestframework = "^3.14.0"
 django-admin = "^2.0.2"
 opencv-python-headless = "^4.9.0.80"
+psycopg2-binary = "^2.9.9"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.2.1"
