@@ -62,4 +62,10 @@ fi
 # Run application if dependicies are already installed
 sudo make
 sleep 3
-open http://127.0.1.1:8000/video_feed/
+if test -n "$(find /dev -name 'video*' -print -quit)"; then
+    echo "Webcam found!"
+    open http://127.0.1.1:8000/video_feed/
+else
+    echo "No webcam found."
+    open http://127.0.1.1:8000/video_feed/?camera_url=do_not_have_webcam__if_have_dont_parametize__just_video_feed_slash
+fi
