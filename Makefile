@@ -71,7 +71,7 @@ all: check silent-stop run-app # Launch videoanalytics (EXAMPLE USAGE>> make )
 
 launch: silent-stop run-app # Launch videoanalytics without user choice to stop containers (EXAMPLE USAGE>> make launch)
 
-frebuild: fclean load-app run-app # BECARE: Completly delete images and load them after, then launch videoanalytics (EXAMPLE USAGE>> make frebuild)
+frebuild: run-build # BECARE: Completly delete images and load them after, then launch videoanalytics (EXAMPLE USAGE>> make frebuild)
 
 # Stop:
 stop: stop-containers # Stop videoanalytics (EXAMPLE USAGE>> make stop )
@@ -89,9 +89,11 @@ back-sh: get-inside-backend # To get into backend (EXAMPLE USAGE>> make back-sh)
 
 # Run App:
 # ------------------------------
-.PHONY: run-app
+.PHONY: run-app run-build
 
 run-app: figlet-launch compose-up-script
+run-build: compose-script-build
+
 
 
 # Sub commands:
@@ -113,6 +115,13 @@ compose-up-script:
 	@echo "$(COLOR_YELLOW)$(TAB)Starting Docker Compose...$(COLOR_CLEAR)"
 	@sudo docker compose -f $(DOCKER_COMPOSE_BACKEND) up -d
 	@echo "$(COLOR_GREEN)$(TAB)Docker Compose up finished successfully!$(COLOR_CLEAR)"
+
+compose-script-build:
+	@echo "$(COLOR_YELLOW)$(TAB)Configuring Docker Compose...$(COLOR_CLEAR)"
+	@bash $(SCRIPTS_DIR)/docker-compose-setup.sh
+	@echo "$(COLOR_YELLOW)$(TAB)Building Docker Compose...$(COLOR_CLEAR)"
+	@sudo docker compose -f $(DOCKER_COMPOSE_BACKEND) build
+	@echo "$(COLOR_GREEN)$(TAB)Building Docker Compose is finished successfully!$(COLOR_CLEAR)"
 
 see-backend-logs:
 	@echo "$(COLOR_YELLOW)$(TAB)Backend logs...$(COLOR_CLEAR)"
@@ -155,7 +164,7 @@ fclean: stop
 		figlet -c -t -f "ANSI Shadow" Deleting...; \
 		echo "\n\n\n"; \
 		echo "$(COLOR_YELLOW)$(TAB)$(TAB)$(TAB)Deleting...$(COLOR_CLEAR)"; \
-		sudo docker rmi -f $$(sudo docker images -a --quiet); \
+		sudo docker rmi -f $$(sudo docker images -a --quiet); h\
 	else \
 		echo "$(COLOR_GREEN)$(TAB)$(TAB)$(TAB)Cleaning canceled!$(COLOR_CLEAR)"; \
 	fi

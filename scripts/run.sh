@@ -45,6 +45,8 @@ fi
 # Check if the OVCTECH_VIDEOANALYTICS_SOFTWARE_INSTALLED environment variable is set to true
 if [ "$OVCTECH_VIDEOANALYTICS_SOFTWARE_INSTALLED" = "true" ]; then
     echo "${COLOR_GREEN}${TAB}Installation state verified. Proceeding to run the application.${COLOR_CLEAR}"
+    echo "${COLOR_GREEN}${TAB}Rebuilding if necessary.${COLOR_CLEAR}"
+    sudo make frebuild
 else
     echo "${COLOR_RED}${TAB}The software does not appear to be installed.${COLOR_CLEAR}"
     read -p "${COLOR_YELLOW}${TAB}Would you like to install the software dependicies now? If yes - type yes${ENTER}${TAB}${TAB}Type choices: [Any button/yes] ${COLOR_CLEAR}" answer
@@ -57,6 +59,7 @@ else
     fi
 fi
 
+
 ###############################################################################
 
 # Prepate docker compose file depending on system webcam
@@ -64,7 +67,8 @@ bash $RELATIVE_PATH/scripts/docker-compose-setup.sh
 
 # Run application if dependicies are already installed
 sudo make
-sleep 3
+sleep 15
+open http://127.0.1.1:5555/
 if test -n "$(find /dev -name 'video*' -print -quit)"; then
     echo "Webcam found!"
     open http://127.0.1.1:8000/video_feed/

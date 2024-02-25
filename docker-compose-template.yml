@@ -1,6 +1,12 @@
 version: "3.9"
-
 services:
+  redis:
+    image: redis:alpine
+    ports:
+      - 6379:6379
+    networks:
+      - django_network
+
   postgres:
     container_name: postgres_videoanalytics
     image: postgres:latest
@@ -28,12 +34,57 @@ services:
       - POSTGRES_DB=my_database
       - POSTGRES_USER=my_username
       - POSTGRES_PASSWORD=my_password
+    env_file:
+      - .env
     networks:
       - django_network
     # ${DEVICES}:
       # ${DEVICES_DASH} /dev/video0:/dev/video0
     volumes:
       - ./data:/var/lib/postgresql/data
+      - ./videoanalytics/data:/data
+
+  celery_worker:
+    container_name: celery_worker_videoanalytics
+    restart: always
+    hostname: celery_worker
+    build:
+      context: ./videoanalytics
+      dockerfile: Dockerfile
+    command: ['celery', '-A', 'backend.celery_app', 'worker' ]
+    volumes:
+      - ./data:/var/lib/postgresql/data
+      - ./videoanalytics/data:/data
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    links:
+      - redis
+    networks:
+      - django_network
+
+  flower_worker:
+    container_name: flower_worker_videoanalytics
+    restart: always
+    hostname: flower_worker
+    build:
+      context: ./videoanalytics
+      dockerfile: Dockerfile
+    ports:
+      - 5555:5555
+    command: ['celery', '-A', 'backend.celery_app', 'flower' ]
+    volumes:
+      - ./data:/var/lib/postgresql/data
+      - ./videoanalytics/data:/data
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    links:
+      - redis
+    networks:
+      - django_network
 
 networks:
   django_network:

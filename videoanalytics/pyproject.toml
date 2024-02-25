@@ -12,6 +12,11 @@ djangorestframework = "^3.14.0"
 django-admin = "^2.0.2"
 opencv-python-headless = "^4.9.0.80"
 psycopg2-binary = "^2.9.9"
+ultralytics = "^8.1.18"
+pytelegrambotapi = "^4.16.1"
+celery = {extras = ["redis"], version = "^5.3.6"}
+redis = "^5.0.1"
+flower = "^2.0.1"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.2.1"
