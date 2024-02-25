@@ -11,6 +11,7 @@ repos:
       - id: check-docstring-first
       - id: check-symlinks
       - id: check-added-large-files
+        exclude: ^(videoanalytics/videoanalytics/modules/yolov8n.pt|videoanalytics/videoanalytics/test.mp4)$
       - id: check-merge-conflict
       - id: check-executables-have-shebangs
       - id: check-shebang-scripts-are-executable

@@ -8,7 +8,9 @@ from django.http import StreamingHttpResponse
 from django.shortcuts import render
 from django.http import HttpResponseServerError
 
-LOGGING_LEVEL = logging.INFO
+from . import yolo
+
+LOGGING_LEVEL = logging.ERROR
 logging.basicConfig(format="%(asctime)s|%(levelname)s|%(message)s", level=LOGGING_LEVEL)
 logging.getLogger("videoanalytics").setLevel(logging.ERROR)
 logger = logging.getLogger(__name__)
@@ -51,6 +53,7 @@ def gen_frames(camera_url: str | int) -> Iterator[bytes]:
     if not cap.isOpened():
         logger.info("Failed to open camera.")
         return
+
     while True:
         try:
             success, frame = cap.read()
@@ -59,15 +62,29 @@ def gen_frames(camera_url: str | int) -> Iterator[bytes]:
                 break
             else:
                 logger.debug("Frame captured.")
-                ret, buffer = cv2.imencode(".jpg", frame)
-                frame = buffer.tobytes()
-                yield (
-                    b"--frame\r\n" b"Content-Type: image/jpeg\r\n\r\n" + frame + b"\r\n"
-                )
+
+                # Perform object detection with error handling
+                try:
+                    annotated_frame, detections = yolo.detect(frame)
+                except Exception as detection_error:
+                    logger.error(
+                        "Error during object detection: %s", str(detection_error)
+                    )
+                    annotated_frame = None
+
+                if annotated_frame is not None:
+                    _, buffer = cv2.imencode(".jpg", annotated_frame)
+                    annotated_frame_bytes = buffer.tobytes()
+
+                    yield (
+                        b"--frame\r\n"
+                        b"Content-Type: image/jpeg\r\n\r\n"
+                        + annotated_frame_bytes
+                        + b"\r\n"
+                    )
         except Exception as e:
-            logger.error("Error capturing frame:", str(e))
+            logger.error("Error capturing frame: %s", str(e))
             break
-    cap.release()
 
 
 def video_feed(request) -> StreamingHttpResponse:

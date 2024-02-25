@@ -55,7 +55,7 @@ if [ -n "$ENV_SETUP" ]; then
     # Append the environment variable setup to the detected shell's configuration file
     echo 'export OVCTECH_VIDEOANALYTICS_SOFTWARE_INSTALLED=true' >> "$ENV_SETUP"
     echo "${COLOR_GREEN}${TAB}${TAB}Installation flag set in $ENV_SETUP.${COLOR_CLEAR}"
-    echo "${COLOR_YELLOW}${TAB}${TAB}Please restart your terminal or source the config file to apply changes.${COLOR_CLEAR}"
+    echo "${COLOR_YELLOW}${TAB}${TAB}Please restart your terminal or source the config file to apply changes. Accept next offer for auto.${COLOR_CLEAR}"
 else
     echo "${COLOR_RED}${TAB}${TAB}${TAB}Could not determine shell configuration file to update.${COLOR_CLEAR}"
 fi
