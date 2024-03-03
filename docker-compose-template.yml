@@ -1,6 +1,7 @@
 version: "3.9"
 services:
   redis:
+    container_name: redis_videoanalytics
     image: redis:alpine
     ports:
       - 6379:6379
@@ -24,8 +25,9 @@ services:
     build:
       context: ./videoanalytics/
       dockerfile: Dockerfile
-    ports:
-      - 8000:8000
+    entrypoint: /app/entrypoint.sh
+    expose:
+      - 8000
     depends_on:
       - postgres
     environment:
@@ -43,6 +45,20 @@ services:
     volumes:
       - ./data:/var/lib/postgresql/data
       - ./videoanalytics/data:/data
+      - static_volume:/app/static
+
+  nginx:
+    container_name: nginx_videoanalytics
+    image: nginx:latest
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - static_volume:/var/www/static
+    ports:
+      - 8100:8100
+    depends_on:
+      - django
+    networks:
+      - django_network
 
   celery_worker:
     container_name: celery_worker_videoanalytics
@@ -85,6 +101,9 @@ services:
       - redis
     networks:
       - django_network
+
+volumes:
+  static_volume:
 
 networks:
   django_network:

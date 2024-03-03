@@ -5,7 +5,6 @@ import os
 
 from collections.abc import Iterator
 from django.http import StreamingHttpResponse
-from django.shortcuts import render
 from django.http import HttpResponseServerError
 
 from . import yolo
@@ -14,10 +13,6 @@ LOGGING_LEVEL = logging.ERROR
 logging.basicConfig(format="%(asctime)s|%(levelname)s|%(message)s", level=LOGGING_LEVEL)
 logging.getLogger("videoanalytics").setLevel(logging.ERROR)
 logger = logging.getLogger(__name__)
-
-
-def video_demo(request):
-    return render(request, "video_demo.html")
 
 
 def get_camera_url():

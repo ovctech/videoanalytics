@@ -17,6 +17,7 @@ pytelegrambotapi = "^4.16.1"
 celery = {extras = ["redis"], version = "^5.3.6"}
 redis = "^5.0.1"
 flower = "^2.0.1"
+gunicorn = "^21.2.0"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.2.1"

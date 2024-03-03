@@ -69,10 +69,11 @@ bash $RELATIVE_PATH/scripts/docker-compose-setup.sh
 sudo make
 sleep 15
 open http://127.0.1.1:5555/
+open http://127.0.1.1:8100/admin/
 if test -n "$(find /dev -name 'video*' -print -quit)"; then
     echo "Webcam found!"
-    open http://127.0.1.1:8000/video_feed/
+    open http://127.0.1.1:8100/video_feed/
 else
     echo "No webcam found."
-    open http://127.0.1.1:8000/video_feed/?camera_url=do_not_have_webcam__if_have_dont_parametize__just_video_feed_slash
+    open http://127.0.1.1:8100/video_feed/?camera_url=do_not_have_webcam__if_have_dont_parametize__just_video_feed_slash
 fi
