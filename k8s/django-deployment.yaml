@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: django-deployment
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: django-app
+    spec:
+      containers:
+        - name: django-videoanalytics
+          image: docker.io/checkpoint5/django:latest
+          volumeMounts:
+            - mountPath: "/var/lib/postgresql/data"
+              name: postgres-storage
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8000
+          env:
+            - name: POSTGRES_HOST
+              value: postgres
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: POSTGRES_DB
+              value: my_database
+            - name: POSTGRES_USER
+              value: my_username
+            - name: POSTGRES_PASSWORD
+              value: my_password
+            - name: APP_ENV
+              value: k8s
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: postgres-pvc-postgres-statefulset-0     
+  selector:
+    matchLabels:
+      app: django-app
