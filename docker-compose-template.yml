@@ -45,7 +45,7 @@ services:
     volumes:
       - ./data:/var/lib/postgresql/data
       - ./videoanalytics/data:/data
-      - static_volume:/app/static
+      - static_volume:/var/www/static
 
   nginx:
     container_name: nginx_videoanalytics
