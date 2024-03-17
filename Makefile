@@ -24,6 +24,9 @@ apply_django:
 	echo "apply_django" > apply_django
 
 apply_django_ingress:
-	kubectl apply -f k8s/django-ingress.yaml
+	@status=1; \
+	while [ $$status -ne 0 ]; do \
+		kubectl apply -f k8s/django-ingress.yaml ; \
+		status=$$?; \
+	done
 	rm -f start_minikube setup_docker_env enable_ingress apply_postgres apply_django
-
