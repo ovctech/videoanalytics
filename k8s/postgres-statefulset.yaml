@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres-statefulset
+spec:
+  serviceName: postgres-service
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: postgres-app
+    spec:
+      containers:
+        - name: postgres-videoanalytics
+          image: postgres:latest
+          volumeMounts:
+            - mountPath: "/var/lib/postgresql/data"
+              name: postgres-pvc
+          env:
+            - name: POSTGRES_DB
+              value: my_database
+            - name: POSTGRES_USER
+              value: my_username
+            - name: POSTGRES_PASSWORD
+              value: my_password
+          ports:
+            - containerPort: 5432
+              name: postgres-cli
+      volumes:
+        - name: postgres-pvc
+          persistentVolumeClaim:
+            claimName: postgres-pvc
+  selector:
+    matchLabels:
+      app: postgres-app
+      
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-pvc
+      spec:
+        accessModes:
+          - ReadWriteMany
+        resources:
+          requests:
+            storage: 1000Mi
