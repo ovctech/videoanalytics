@@ -27,5 +27,4 @@ from videoanalytics import views
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("video_feed/", views.video_feed, name="video_feed"),
-    path("video_demo/", views.video_demo, name="video_demo"),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
