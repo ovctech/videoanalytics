@@ -19,12 +19,13 @@ RUN python -m pip install --no-cache-dir poetry==1.7.1 \
 
 FROM python:3.11.0-slim-bullseye
 
-RUN mkdir -p /data
-COPY --from=builder /app /app
-COPY . /app/
-
 WORKDIR /app
 
-ENV PATH="/app/.venv/bin:$PATH"
+RUN mkdir -p /data
 
-CMD ["/app/.venv/bin/python", "manage.py", "runserver", "0.0.0.0:8000"]
+RUN mkdir -p /var/www/static
+COPY --from=builder /app /app
+COPY . /app/
+COPY entrypoint.sh  /app/
+
+ENV PATH="/app/.venv/bin:$PATH"
