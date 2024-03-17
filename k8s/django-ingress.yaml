@@ -6,7 +6,7 @@ metadata:
     nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
 spec:
   rules:
-    - host: backend.localhost
+    - host: backend.info
       http:
         paths:
           - path: /

@@ -15,14 +15,16 @@ spec:
           volumeMounts:
             - mountPath: "/var/lib/postgresql/data"
               name: postgres-storage
+            - mountPath: /dev/video0
+              name: camera
           imagePullPolicy: Never
           ports:
             - containerPort: 8000
           env:
             - name: POSTGRES_HOST
-              value: postgres
+              value: 'postgres-statefulset-0.postgres-service.default.svc.cluster.local'
             - name: POSTGRES_PORT
-              value: "5432"
+              value: '5432'
             - name: POSTGRES_DB
               value: my_database
             - name: POSTGRES_USER
@@ -31,10 +33,15 @@ spec:
               value: my_password
             - name: APP_ENV
               value: k8s
+          securityContext:
+            privileged: true
       volumes:
         - name: postgres-storage
           persistentVolumeClaim:
-            claimName: postgres-pvc-postgres-statefulset-0     
+            claimName: postgres-pvc-postgres-statefulset-0
+        - name: camera
+          hostPath:
+            path: /dev/video0
   selector:
     matchLabels:
       app: django-app

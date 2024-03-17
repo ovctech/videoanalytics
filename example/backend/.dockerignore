@@ -1,8 +1,0 @@
-.git
-.idea
-.logs
-.pytest_cache
-tests
-venv
-*.pyc
-*.pyo
