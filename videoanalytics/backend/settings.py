@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-r)28+*-%uagi$_uvpdzs4lgstea85u7nikb7jc8-5uw803&&(o
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = [".localhost", "127.0.0.1", "[::1]", "127.0.1.1"]
+ALLOWED_HOSTS = [".localhost", "127.0.0.1", "[::1]", "127.0.1.1", "django"]
 
 
 # Application definition
@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "videoanalytics",
     "celery",
+    "django_prometheus",
 ]
 
 MIDDLEWARE = [
@@ -50,6 +51,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django_prometheus.middleware.PrometheusAfterMiddleware",
+    "django_prometheus.middleware.PrometheusBeforeMiddleware",
 ]
 
 ROOT_URLCONF = "backend.urls"
