@@ -70,6 +70,8 @@ sudo make
 sleep 15
 open http://127.0.1.1:5555/
 open http://127.0.1.1:8100/admin/
+open http://127.0.1.1:9090
+open http://127.0.1.1:3000
 if test -n "$(find /dev -name 'video*' -print -quit)"; then
     echo "Webcam found!"
     open http://127.0.1.1:8100/video_feed/
